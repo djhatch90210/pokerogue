@@ -19,7 +19,7 @@ import { ModifierPoolType, getDefaultModifierTypeForTier, getEnemyModifierTypesF
 import AbilityBar from "./ui/ability-bar";
 import { BlockItemTheftAbAttr, DoubleBattleChanceAbAttr, IncrementMovePriorityAbAttr, applyAbAttrs } from "./data/ability";
 import { allAbilities } from "./data/ability";
-import Battle, { BattleType, FixedBattleConfig, fixedBattles } from "./battle";
+import Battle, { BattleType, FixedBattleConfig, fixedBattles, fixedBattles100 } from "./battle";
 import { GameMode, GameModes, gameModes } from "./game-mode";
 import FieldSpritePipeline from "./pipelines/field-sprite";
 import SpritePipeline from "./pipelines/sprite";
@@ -261,6 +261,10 @@ export default class BattleScene extends SceneBase {
   update() {
     this.inputController.update();
     this.ui?.update();
+  }
+
+  isClassicDerivative(): boolean { //TODO, perhaps use this occasions where we don't care which game mode is being played outside of just a classic mode
+    return (this.gameMode.isClassic || this.gameMode.isClassic100);
   }
 
   launchBattle() {
@@ -870,8 +874,8 @@ export default class BattleScene extends SceneBase {
 
     const playerField = this.getPlayerField();
 
-    if (this.gameMode.hasFixedBattles && fixedBattles.hasOwnProperty(newWaveIndex) && trainerData === undefined) {
-      battleConfig = fixedBattles[newWaveIndex];
+    if (this.gameMode.hasFixedBattles && (this.gameMode.isClassic100 ? fixedBattles100.hasOwnProperty(newWaveIndex) : fixedBattles.hasOwnProperty(newWaveIndex)) && trainerData === undefined) {
+      battleConfig = this.gameMode.isClassic100 ? fixedBattles100[newWaveIndex] : fixedBattles[newWaveIndex];
       newDouble = battleConfig.double;
       newBattleType = battleConfig.battleType;
       this.executeWithSeedOffset(() => newTrainer = battleConfig.getTrainer(this), (battleConfig.seedOffsetWaveIndex || newWaveIndex) << 8);
@@ -939,7 +943,9 @@ export default class BattleScene extends SceneBase {
 
     if (!waveIndex && lastBattle) {
       let isNewBiome = !(lastBattle.waveIndex % 10) || ((this.gameMode.hasShortBiomes || this.gameMode.isDaily) && (lastBattle.waveIndex % 50) === 49);
-      if (!isNewBiome && this.gameMode.hasShortBiomes && (lastBattle.waveIndex % 10) < 9) {
+      if (this.gameMode.isClassic100) {
+        isNewBiome = !(lastBattle.waveIndex < 81 ? lastBattle.waveIndex % 5 : lastBattle.waveIndex % 10) || ((this.gameMode.hasShortBiomes || this.gameMode.isDaily) && (lastBattle.waveIndex % 50) === 49);
+      } else if (!isNewBiome && this.gameMode.hasShortBiomes && (lastBattle.waveIndex % 10) < 9) {
         let w = lastBattle.waveIndex - ((lastBattle.waveIndex % 10) - 1);
         let biomeWaves = 1;
         while (w < lastBattle.waveIndex) {
@@ -1126,7 +1132,7 @@ export default class BattleScene extends SceneBase {
       isBoss = true;
     } else {
       this.executeWithSeedOffset(() => {
-        isBoss = waveIndex % 10 === 0 || (this.gameMode.hasRandomBosses && Utils.randSeedInt(100) < Math.min(Math.max(Math.ceil((waveIndex - 250) / 50), 0) * 2, 30));
+        isBoss = (this.gameMode.isClassic100 ? waveIndex % 5 === 0 : waveIndex % 10 === 0)  || (this.gameMode.hasRandomBosses && Utils.randSeedInt(100) < Math.min(Math.max(Math.ceil((waveIndex - 250) / 50), 0) * 2, 30));
       }, waveIndex << 2);
     }
     if (!isBoss) {

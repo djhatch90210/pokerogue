@@ -54,6 +54,8 @@ const displayStats: DisplayStats = {
   ribbonsOwned: "Ribbons Owned",
   classicSessionsPlayed: "Classic Runs",
   sessionsWon: "Classic Wins",
+  classicQuickSessionsPlayed: "Quick Classic Runs",
+  classicQuickSessionsWon: "Quick Classic Sessions Won",
   dailyRunSessionsPlayed: "Daily Run Attempts",
   dailyRunSessionsWon: "Daily Run Wins",
   endlessSessionsPlayed: "Endless Runs?",

@@ -93,7 +93,7 @@ export default class Battle {
 
   private initBattleSpec(): void {
     let spec = BattleSpec.DEFAULT;
-    if (this.gameMode.isWaveFinal(this.waveIndex) && this.gameMode.isClassic) {
+    if (this.gameMode.isWaveFinal(this.waveIndex) && (this.gameMode.isClassic || this.gameMode.isClassic100)) {
       spec = BattleSpec.FINAL_BOSS;
     }
     this.battleSpec = spec;
@@ -196,6 +196,8 @@ export default class Battle {
       return this.trainer.getBattleBgm();
     } else if (this.gameMode.isClassic && this.waveIndex > 195 && this.battleSpec !== BattleSpec.FINAL_BOSS) {
       return "end_summit";
+    } else if (this.gameMode.isClassic100 && this.waveIndex > 95 && this.battleSpec !== BattleSpec.FINAL_BOSS) {
+      return "end_summit";
     }
     for (const pokemon of battlers) {
       if (this.battleSpec === BattleSpec.FINAL_BOSS) {
@@ -224,7 +226,7 @@ export default class Battle {
       }
     }
 
-    if (scene.gameMode.isClassic && this.waveIndex <= 4) {
+    if ((scene.gameMode.isClassic || scene.gameMode.isClassic100) && this.waveIndex <= 4) {
       return "battle_wild";
     }
 
@@ -346,5 +348,32 @@ export const fixedBattles: FixedBattleConfigs = {
   [190]: new FixedBattleConfig().setBattleType(BattleType.TRAINER).setSeedOffsetWave(182)
     .setGetTrainerFunc(getRandomTrainerFunc([ TrainerType.BLUE, [ TrainerType.RED, TrainerType.LANCE_CHAMPION ], [ TrainerType.STEVEN, TrainerType.WALLACE ], TrainerType.CYNTHIA, [ TrainerType.ALDER, TrainerType.IRIS ], TrainerType.DIANTHA, TrainerType.HAU,TrainerType.LEON, [ TrainerType.GEETA, TrainerType.NEMONA ], TrainerType.KIERAN])),
   [195]: new FixedBattleConfig().setBattleType(BattleType.TRAINER)
+    .setGetTrainerFunc(scene => new Trainer(scene, TrainerType.RIVAL_6, scene.gameData.gender === PlayerGender.MALE ? TrainerVariant.FEMALE : TrainerVariant.DEFAULT))
+};
+
+export const fixedBattles100: FixedBattleConfigs = {
+  [4]: new FixedBattleConfig().setBattleType(BattleType.TRAINER)
+    .setGetTrainerFunc(scene => new Trainer(scene, TrainerType.YOUNGSTER, Utils.randSeedInt(2) ? TrainerVariant.FEMALE : TrainerVariant.DEFAULT)),
+  [8]: new FixedBattleConfig().setBattleType(BattleType.TRAINER)
+    .setGetTrainerFunc(scene => new Trainer(scene, TrainerType.RIVAL, scene.gameData.gender === PlayerGender.MALE ? TrainerVariant.FEMALE : TrainerVariant.DEFAULT)),
+  [28]: new FixedBattleConfig().setBattleType(BattleType.TRAINER)
+    .setGetTrainerFunc(scene => new Trainer(scene, TrainerType.RIVAL_2, scene.gameData.gender === PlayerGender.MALE ? TrainerVariant.FEMALE : TrainerVariant.DEFAULT)),
+  [48]: new FixedBattleConfig().setBattleType(BattleType.TRAINER)
+    .setGetTrainerFunc(scene => new Trainer(scene, TrainerType.RIVAL_3, scene.gameData.gender === PlayerGender.MALE ? TrainerVariant.FEMALE : TrainerVariant.DEFAULT)),
+  [68]: new FixedBattleConfig().setBattleType(BattleType.TRAINER)
+    .setGetTrainerFunc(scene => new Trainer(scene, TrainerType.RIVAL_4, scene.gameData.gender === PlayerGender.MALE ? TrainerVariant.FEMALE : TrainerVariant.DEFAULT)),
+  [78]: new FixedBattleConfig().setBattleType(BattleType.TRAINER)
+    .setGetTrainerFunc(scene => new Trainer(scene, TrainerType.RIVAL_5, scene.gameData.gender === PlayerGender.MALE ? TrainerVariant.FEMALE : TrainerVariant.DEFAULT)),
+  [82]: new FixedBattleConfig().setBattleType(BattleType.TRAINER)
+    .setGetTrainerFunc(getRandomTrainerFunc([ TrainerType.LORELEI, TrainerType.WILL, TrainerType.SIDNEY, TrainerType.AARON, TrainerType.SHAUNTAL, TrainerType.MALVA, [ TrainerType.HALA, TrainerType.MOLAYNE ], TrainerType.RIKA, TrainerType.CRISPIN ])),
+  [84]: new FixedBattleConfig().setBattleType(BattleType.TRAINER).setSeedOffsetWave(82)
+    .setGetTrainerFunc(getRandomTrainerFunc([ TrainerType.BRUNO, TrainerType.KOGA, TrainerType.PHOEBE, TrainerType.BERTHA, TrainerType.MARSHAL, TrainerType.SIEBOLD, TrainerType.OLIVIA, TrainerType.POPPY, TrainerType.AMARYS ])),
+  [86]: new FixedBattleConfig().setBattleType(BattleType.TRAINER).setSeedOffsetWave(82)
+    .setGetTrainerFunc(getRandomTrainerFunc([ TrainerType.AGATHA, TrainerType.BRUNO, TrainerType.GLACIA, TrainerType.FLINT, TrainerType.GRIMSLEY, TrainerType.WIKSTROM, TrainerType.ACEROLA, TrainerType.LARRY_ELITE, TrainerType.LACEY ])),
+  [88]: new FixedBattleConfig().setBattleType(BattleType.TRAINER).setSeedOffsetWave(82)
+    .setGetTrainerFunc(getRandomTrainerFunc([ TrainerType.LANCE, TrainerType.KAREN, TrainerType.DRAKE, TrainerType.LUCIAN, TrainerType.CAITLIN, TrainerType.DRASNA, TrainerType.KAHILI, TrainerType.HASSEL, TrainerType.DRAYTON ])),
+  [90]: new FixedBattleConfig().setBattleType(BattleType.TRAINER).setSeedOffsetWave(82)
+    .setGetTrainerFunc(getRandomTrainerFunc([ TrainerType.BLUE, [ TrainerType.RED, TrainerType.LANCE_CHAMPION ], [ TrainerType.STEVEN, TrainerType.WALLACE ], TrainerType.CYNTHIA, [ TrainerType.ALDER, TrainerType.IRIS ], TrainerType.DIANTHA, TrainerType.HAU, [ TrainerType.GEETA, TrainerType.NEMONA ], TrainerType.KIERAN, TrainerType.LEON ])),
+  [95]: new FixedBattleConfig().setBattleType(BattleType.TRAINER)
     .setGetTrainerFunc(scene => new Trainer(scene, TrainerType.RIVAL_6, scene.gameData.gender === PlayerGender.MALE ? TrainerVariant.FEMALE : TrainerVariant.DEFAULT))
 };

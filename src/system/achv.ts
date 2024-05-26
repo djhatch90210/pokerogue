@@ -163,7 +163,8 @@ export const achvs = {
   HATCH_SHINY: new Achv("Shiny Egg", "Hatch a shiny Pokémon from an egg", "golden_mystic_ticket", 100).setSecret(),
   HIDDEN_ABILITY: new Achv("Hidden Potential", "Catch a Pokémon with a hidden ability", "ability_charm", 75),
   PERFECT_IVS: new Achv("Certificate of Authenticity", "Get perfect IVs on a Pokémon", "blunder_policy", 100),
-  CLASSIC_VICTORY: new Achv("Undefeated", "Beat the game in classic mode", "relic_crown", 150)
+  CLASSIC_VICTORY: new Achv("Undefeated", "Beat the game in classic mode", "relic_crown", 150),
+  CLASSIC100_VICTORY: new Achv("Undefeated but fast", "Beat the game in quick classic mode", "relic_crown", 150)
 };
 
 {

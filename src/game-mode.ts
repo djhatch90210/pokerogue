@@ -11,7 +11,8 @@ export enum GameModes {
   CLASSIC,
   ENDLESS,
   SPLICED_ENDLESS,
-  DAILY
+  DAILY,
+  CLASSIC100
 }
 
 interface GameModeConfig {
@@ -25,6 +26,7 @@ interface GameModeConfig {
   hasRandomBiomes?: boolean;
   hasRandomBosses?: boolean;
   isSplicedOnly?: boolean;
+  isClassic100?: boolean;
 }
 
 export class GameMode implements GameModeConfig {
@@ -39,6 +41,7 @@ export class GameMode implements GameModeConfig {
   public hasRandomBiomes: boolean;
   public hasRandomBosses: boolean;
   public isSplicedOnly: boolean;
+  public isClassic100: boolean;
 
   constructor(modeId: GameModes, config: GameModeConfig) {
     this.modeId = modeId;
@@ -101,9 +104,11 @@ export class GameMode implements GameModeConfig {
     if (this.isDaily) {
       return waveIndex % 10 === 5 || (!(waveIndex % 10) && waveIndex > 10 && !this.isWaveFinal(waveIndex));
     }
-    if ((waveIndex % 30) === (arena.scene.offsetGym ? 0 : 20) && !this.isWaveFinal(waveIndex)) {
+    if (this.isClassic && (waveIndex % 30) === (arena.scene.offsetGym ? 0 : 20) && !this.isWaveFinal(waveIndex)) {
       return true;
-    } else if (waveIndex % 10 !== 1 && waveIndex % 10) {
+    } else if (this.isClassic100 && waveIndex % 10 === 0 && !this.isWaveFinal(waveIndex) && waveIndex > 9 && waveIndex < 90) {
+      return true;
+    } else if (waveIndex % 10 !== 1 && this.isClassic100 ? waveIndex % 10 === 5 : waveIndex % 10) {
       const trainerChance = arena.getTrainerChance();
       let allowTrainerBattle = true;
       if (trainerChance) {
@@ -137,6 +142,8 @@ export class GameMode implements GameModeConfig {
     switch (this.modeId) {
     case GameModes.DAILY:
       return waveIndex > 10 && waveIndex < 50 && !(waveIndex % 10);
+    case GameModes.CLASSIC100:
+      return waveIndex > 9 && waveIndex < 90 && waveIndex % 10 === 0 && (biomeType !== Biome.END || this.isClassic100 || this.isWaveFinal(waveIndex));
     default:
       return (waveIndex % 30) === (offsetGym ? 0 : 20) && (biomeType !== Biome.END || this.isClassic || this.isWaveFinal(waveIndex));
     }
@@ -162,6 +169,8 @@ export class GameMode implements GameModeConfig {
     switch (modeId) {
     case GameModes.CLASSIC:
       return waveIndex === 200;
+    case GameModes.CLASSIC100:
+      return waveIndex === 100;
     case GameModes.ENDLESS:
     case GameModes.SPLICED_ENDLESS:
       return !(waveIndex % 250);
@@ -175,6 +184,10 @@ export class GameMode implements GameModeConfig {
      * @returns true if waveIndex is a multiple of 10
      */
   isBoss(waveIndex: integer): boolean {
+    switch (this.modeId) {
+    case GameModes.CLASSIC100:
+      return waveIndex % 5 === 0 && waveIndex > 6;
+    }
     return waveIndex % 10 === 0;
   }
 
@@ -213,6 +226,8 @@ export class GameMode implements GameModeConfig {
     switch (this.modeId) {
     case GameModes.CLASSIC:
       return 5000;
+    case GameModes.CLASSIC100:
+      return 2500;
     case GameModes.DAILY:
       return 2500;
     }
@@ -221,6 +236,7 @@ export class GameMode implements GameModeConfig {
   getEnemyModifierChance(isBoss: boolean): integer {
     switch (this.modeId) {
     case GameModes.CLASSIC:
+    case GameModes.CLASSIC100:
     case GameModes.DAILY:
       return !isBoss ? 18 : 6;
     case GameModes.ENDLESS:
@@ -239,12 +255,15 @@ export class GameMode implements GameModeConfig {
       return "Endless (Spliced)";
     case GameModes.DAILY:
       return "Daily Run";
+    case GameModes.CLASSIC100:
+      return "Quick Classic";
     }
   }
 }
 
 export const gameModes = Object.freeze({
   [GameModes.CLASSIC]: new GameMode(GameModes.CLASSIC, { isClassic: true, hasTrainers: true, hasFixedBattles: true }),
+  [GameModes.CLASSIC100]: new GameMode(GameModes.CLASSIC100, { isClassic: false, hasTrainers: true, hasFixedBattles: true, isClassic100: true}),
   [GameModes.ENDLESS]: new GameMode(GameModes.ENDLESS, { isEndless: true, hasShortBiomes: true, hasRandomBosses: true }),
   [GameModes.SPLICED_ENDLESS]: new GameMode(GameModes.SPLICED_ENDLESS, { isEndless: true, hasShortBiomes: true, hasRandomBosses: true, isSplicedOnly: true }),
   [GameModes.DAILY]: new GameMode(GameModes.DAILY, { isDaily: true, hasTrainers: true, hasNoShop: true })

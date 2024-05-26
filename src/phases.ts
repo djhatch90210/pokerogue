@@ -207,6 +207,13 @@ export class TitlePhase extends Phase {
               }
             },
             {
+              label: gameModes[GameModes.CLASSIC100].getName(),
+              handler: () => {
+                setModeAndEnd(GameModes.CLASSIC100);
+                return true;
+              }
+            },
+            {
               label: gameModes[GameModes.ENDLESS].getName(),
               handler: () => {
                 setModeAndEnd(GameModes.ENDLESS);
@@ -234,10 +241,34 @@ export class TitlePhase extends Phase {
           });
           this.scene.ui.showText(i18next.t("menu:selectGameMode"), null, () => this.scene.ui.setOverlayMode(Mode.OPTION_SELECT, { options: options }));
         } else {
-          this.gameMode = GameModes.CLASSIC;
-          this.scene.ui.setMode(Mode.MESSAGE);
-          this.scene.ui.clearText();
-          this.end();
+
+          const options: OptionSelectItem[] = [
+            {
+              label: gameModes[GameModes.CLASSIC].getName(),
+              handler: () => {
+                setModeAndEnd(GameModes.CLASSIC);
+                return true;
+              }
+            },
+            {
+              label: gameModes[GameModes.CLASSIC100].getName(),
+              handler: () => {
+                setModeAndEnd(GameModes.CLASSIC100);
+                return true;
+              }
+            }
+          ];
+          options.push({
+            label: i18next.t("menu:cancel"),
+            handler: () => {
+              this.scene.clearPhaseQueue();
+              this.scene.pushPhase(new TitlePhase(this.scene));
+              super.end();
+              return true;
+            }
+          });
+          this.scene.ui.showText(i18next.t("menu:selectGameMode"), null, () => this.scene.ui.setOverlayMode(Mode.OPTION_SELECT, { options: options }));
+
         }
         return true;
       }
@@ -554,8 +585,11 @@ export class SelectStarterPhase extends Phase {
         Promise.all(loadPokemonAssets).then(() => {
           SoundFade.fadeOut(this.scene, this.scene.sound.get("menu"), 500, true);
           this.scene.time.delayedCall(500, () => this.scene.playBgm());
+          //longer term need to case this out
           if (this.scene.gameMode.isClassic) {
             this.scene.gameData.gameStats.classicSessionsPlayed++;
+          } else if (this.scene.gameMode.isClassic100) {
+            this.scene.gameData.gameStats.classicQuickSessionsPlayed++;
           } else {
             this.scene.gameData.gameStats.endlessSessionsPlayed++;
           }
@@ -729,8 +763,11 @@ export class EncounterPhase extends BattlePhase {
 
     this.scene.initSession();
 
-    // Failsafe if players somehow skip floor 200 in classic mode
+    // Failsafe if players somehow skip floor 200 in classic mode or 100 in classic100
     if (this.scene.gameMode.isClassic && this.scene.currentBattle.waveIndex > 200) {
+      this.scene.unshiftPhase(new GameOverPhase(this.scene));
+    }
+    if (this.scene.gameMode.isClassic100 && this.scene.currentBattle.waveIndex > 100) {
       this.scene.unshiftPhase(new GameOverPhase(this.scene));
     }
 
@@ -766,7 +803,7 @@ export class EncounterPhase extends BattlePhase {
       }
 
       if (enemyPokemon.species.speciesId === Species.ETERNATUS) {
-        if (this.scene.gameMode.isClassic && (battle.battleSpec === BattleSpec.FINAL_BOSS || this.scene.gameMode.isWaveFinal(battle.waveIndex))) {
+        if ( (this.scene.gameMode.isClassic || this.scene.gameMode.isClassic100) && (battle.battleSpec === BattleSpec.FINAL_BOSS || this.scene.gameMode.isWaveFinal(battle.waveIndex))) {
           if (battle.battleSpec !== BattleSpec.FINAL_BOSS) {
             enemyPokemon.formIndex = 1;
             enemyPokemon.updateScale();
@@ -1144,7 +1181,7 @@ export class SelectBiomePhase extends BattlePhase {
       this.end();
     };
 
-    if ((this.scene.gameMode.isClassic && this.scene.gameMode.isWaveFinal(this.scene.currentBattle.waveIndex + 9))
+    if (((this.scene.gameMode.isClassic || this.scene.gameMode.isClassic100) && this.scene.gameMode.isWaveFinal(this.scene.currentBattle.waveIndex + 9))
       || (this.scene.gameMode.isDaily && this.scene.gameMode.isWaveFinal(this.scene.currentBattle.waveIndex))
       || (this.scene.gameMode.hasShortBiomes && !(this.scene.currentBattle.waveIndex % 50))) {
       setNextBiome(Biome.END);
@@ -1833,7 +1870,7 @@ export class CommandPhase extends FieldPhase {
       }
       break;
     case Command.BALL:
-      if (this.scene.arena.biomeType === Biome.END && (!this.scene.gameMode.isClassic || (this.scene.getEnemyField().filter(p => p.isActive(true)).some(p => !p.scene.gameData.dexData[p.species.speciesId].caughtAttr) && this.scene.gameData.getStarterCount(d => !!d.caughtAttr) < Object.keys(speciesStarters).length - 1))) {
+      if (this.scene.arena.biomeType === Biome.END && (!(this.scene.gameMode.isClassic || this.scene.gameMode.isClassic100) || (this.scene.getEnemyField().filter(p => p.isActive(true)).some(p => !p.scene.gameData.dexData[p.species.speciesId].caughtAttr) && this.scene.gameData.getStarterCount(d => !!d.caughtAttr) < Object.keys(speciesStarters).length - 1))) {
         this.scene.ui.setMode(Mode.COMMAND, this.fieldIndex);
         this.scene.ui.setMode(Mode.MESSAGE);
         this.scene.ui.showText(i18next.t("battle:noPokeballForce"), null, () => {
@@ -3876,8 +3913,8 @@ export class GameOverPhase extends BattlePhase {
   start() {
     super.start();
 
-    // Failsafe if players somehow skip floor 200 in classic mode
-    if (this.scene.gameMode.isClassic && this.scene.currentBattle.waveIndex > 200) {
+    // Failsafe if players somehow skip floor 200 in classic mode or 100 for classic100
+    if ((this.scene.gameMode.isClassic && this.scene.currentBattle.waveIndex > 200) || (this.scene.gameMode.isClassic100 && this.scene.currentBattle.waveIndex > 100)) {
       this.victory = true;
     }
 
@@ -3930,6 +3967,16 @@ export class GameOverPhase extends BattlePhase {
                 this.awardRibbon(pokemon, true);
               }
             }
+          } else if (this.scene.gameMode.isClassic100) {
+            firstClear = this.scene.validateAchv(achvs.CLASSIC100_VICTORY);
+            this.scene.gameData.gameStats.classicQuickSessionsWon++;
+            for (const pokemon of this.scene.getParty()) {
+              this.awardRibbon(pokemon);
+
+              if (pokemon.species.getRootSpeciesId() !== pokemon.species.getRootSpeciesId(true)) {
+                this.awardRibbon(pokemon, true);
+              }
+            }
           } else if (this.scene.gameMode.isDaily && newClear) {
             this.scene.gameData.gameStats.dailyRunSessionsWon++;
           }
@@ -3960,7 +4007,7 @@ export class GameOverPhase extends BattlePhase {
             this.end();
           };
 
-          if (this.victory && this.scene.gameMode.isClassic) {
+          if (this.victory && (this.scene.gameMode.isClassic || this.scene.gameMode.isClassic100)) {
             this.scene.ui.fadeIn(500).then(() => {
               this.scene.charSprite.showCharacter(`rival_${this.scene.gameData.gender === PlayerGender.FEMALE ? "m" : "f"}`, getCharVariantFromDialogue(miscDialogue.ending[this.scene.gameData.gender === PlayerGender.FEMALE ? 0 : 1])).then(() => {
                 this.scene.ui.showDialogue(miscDialogue.ending[this.scene.gameData.gender === PlayerGender.FEMALE ? 0 : 1], this.scene.gameData.gender === PlayerGender.FEMALE ? trainerConfigs[TrainerType.RIVAL].name : trainerConfigs[TrainerType.RIVAL].nameFemale, null, () => {
