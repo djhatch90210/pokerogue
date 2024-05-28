@@ -9,10 +9,12 @@ import * as Overrides from "./overrides";
 
 export enum GameModes {
   CLASSIC,
+  CLASSICDOUBLE,
   ENDLESS,
   SPLICED_ENDLESS,
   DAILY,
-  CLASSIC100
+  CLASSIC100,
+  CLASSIC100DOUBLE
 }
 
 interface GameModeConfig {
@@ -27,6 +29,7 @@ interface GameModeConfig {
   hasRandomBosses?: boolean;
   isSplicedOnly?: boolean;
   isClassic100?: boolean;
+  isDoubleOnly?: boolean;
 }
 
 export class GameMode implements GameModeConfig {
@@ -42,6 +45,7 @@ export class GameMode implements GameModeConfig {
   public hasRandomBosses: boolean;
   public isSplicedOnly: boolean;
   public isClassic100: boolean;
+  public isDoubleOnly?: boolean;
 
   constructor(modeId: GameModes, config: GameModeConfig) {
     this.modeId = modeId;
@@ -108,7 +112,7 @@ export class GameMode implements GameModeConfig {
       return true;
     } else if (this.isClassic100 && waveIndex % 10 === 0 && !this.isWaveFinal(waveIndex) && waveIndex > 9 && waveIndex < 90) {
       return true;
-    } else if (waveIndex % 10 !== 1 && this.isClassic100 ? waveIndex % 10 === 5 : waveIndex % 10) {
+    } else if (waveIndex % 10 !== 1 && this.isClassic100 ? waveIndex % 10 !== 5 : waveIndex % 10) {
       const trainerChance = arena.getTrainerChance();
       let allowTrainerBattle = true;
       if (trainerChance) {
@@ -248,7 +252,7 @@ export class GameMode implements GameModeConfig {
   getName(): string {
     switch (this.modeId) {
     case GameModes.CLASSIC:
-      return "Classic";
+      return this.isDoubleOnly ? "Double Classic" : "Classic";
     case GameModes.ENDLESS:
       return "Endless";
     case GameModes.SPLICED_ENDLESS:
@@ -256,14 +260,16 @@ export class GameMode implements GameModeConfig {
     case GameModes.DAILY:
       return "Daily Run";
     case GameModes.CLASSIC100:
-      return "Quick Classic";
+      return this.isDoubleOnly ? "Quick Classic Double" : "Quick Classic";
     }
   }
 }
 
 export const gameModes = Object.freeze({
   [GameModes.CLASSIC]: new GameMode(GameModes.CLASSIC, { isClassic: true, hasTrainers: true, hasFixedBattles: true }),
+  [GameModes.CLASSICDOUBLE]: new GameMode(GameModes.CLASSIC, { isClassic: true, hasTrainers: true, hasFixedBattles: true, isDoubleOnly: true }),
   [GameModes.CLASSIC100]: new GameMode(GameModes.CLASSIC100, { isClassic: false, hasTrainers: true, hasFixedBattles: true, isClassic100: true}),
+  [GameModes.CLASSIC100DOUBLE]: new GameMode(GameModes.CLASSIC100, { isClassic: false, hasTrainers: true, hasFixedBattles: true, isClassic100: true, isDoubleOnly: true}),
   [GameModes.ENDLESS]: new GameMode(GameModes.ENDLESS, { isEndless: true, hasShortBiomes: true, hasRandomBosses: true }),
   [GameModes.SPLICED_ENDLESS]: new GameMode(GameModes.SPLICED_ENDLESS, { isEndless: true, hasShortBiomes: true, hasRandomBosses: true, isSplicedOnly: true }),
   [GameModes.DAILY]: new GameMode(GameModes.DAILY, { isDaily: true, hasTrainers: true, hasNoShop: true })

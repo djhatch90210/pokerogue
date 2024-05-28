@@ -214,6 +214,20 @@ export class TitlePhase extends Phase {
               }
             },
             {
+              label: gameModes[GameModes.CLASSICDOUBLE].getName(),
+              handler: () => {
+                setModeAndEnd(GameModes.CLASSICDOUBLE);
+                return true;
+              }
+            },
+            {
+              label: gameModes[GameModes.CLASSIC100DOUBLE].getName(),
+              handler: () => {
+                setModeAndEnd(GameModes.CLASSIC100DOUBLE);
+                return true;
+              }
+            },
+            {
               label: gameModes[GameModes.ENDLESS].getName(),
               handler: () => {
                 setModeAndEnd(GameModes.ENDLESS);
@@ -254,6 +268,20 @@ export class TitlePhase extends Phase {
               label: gameModes[GameModes.CLASSIC100].getName(),
               handler: () => {
                 setModeAndEnd(GameModes.CLASSIC100);
+                return true;
+              }
+            },
+            {
+              label: gameModes[GameModes.CLASSICDOUBLE].getName(),
+              handler: () => {
+                setModeAndEnd(GameModes.CLASSICDOUBLE);
+                return true;
+              }
+            },
+            {
+              label: gameModes[GameModes.CLASSIC100DOUBLE].getName(),
+              handler: () => {
+                setModeAndEnd(GameModes.CLASSIC100DOUBLE);
                 return true;
               }
             }

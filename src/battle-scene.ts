@@ -900,7 +900,7 @@ export default class BattleScene extends SceneBase {
           const doubleChance = new Utils.IntegerHolder(newWaveIndex % 10 === 0 ? 32 : 8);
           this.applyModifiers(DoubleBattleChanceBoosterModifier, true, doubleChance);
           playerField.forEach(p => applyAbAttrs(DoubleBattleChanceAbAttr, p, null, doubleChance));
-          doubleTrainer = !Utils.randSeedInt(doubleChance.value);
+          doubleTrainer = this.gameMode.isDoubleOnly ? true : !Utils.randSeedInt(doubleChance.value); //TODO do this good
         }
         newTrainer = trainerData !== undefined ? trainerData.toTrainer(this) : new Trainer(this, trainerType, doubleTrainer ? TrainerVariant.DOUBLE : Utils.randSeedInt(2) ? TrainerVariant.FEMALE : TrainerVariant.DEFAULT);
         this.field.add(newTrainer);
@@ -912,7 +912,7 @@ export default class BattleScene extends SceneBase {
         const doubleChance = new Utils.IntegerHolder(newWaveIndex % 10 === 0 ? 32 : 8);
         this.applyModifiers(DoubleBattleChanceBoosterModifier, true, doubleChance);
         playerField.forEach(p => applyAbAttrs(DoubleBattleChanceAbAttr, p, null, doubleChance));
-        newDouble = !Utils.randSeedInt(doubleChance.value);
+        newDouble = this.gameMode.isDoubleOnly ? true : !Utils.randSeedInt(doubleChance.value); //TODO do this good
       } else if (newBattleType === BattleType.TRAINER) {
         newDouble = newTrainer.variant === TrainerVariant.DOUBLE;
       }
