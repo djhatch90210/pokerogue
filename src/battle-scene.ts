@@ -935,7 +935,7 @@ export default class BattleScene extends SceneBase {
     this.lastEnemyTrainer = lastBattle?.trainer ?? null;
 
     this.executeWithSeedOffset(() => {
-      this.currentBattle = new Battle(this.gameMode, newWaveIndex, newBattleType, newTrainer, newDouble);
+      this.currentBattle = new Battle(this.gameMode, newWaveIndex, newBattleType, newTrainer, newDouble, this.arena.biomeType); //TODO awful way of deciding which boss the player is fighting and accounting for it, this needs to be fixed
     }, newWaveIndex << 3, this.waveSeed);
     this.currentBattle.incrementTurn(this);
 
@@ -2067,9 +2067,14 @@ export default class BattleScene extends SceneBase {
     return null;
   }
 
-  triggerPokemonFormChange(pokemon: Pokemon, formChangeTriggerType: { new(...args: any[]): SpeciesFormChangeTrigger }, delayed: boolean = false, modal: boolean = false): boolean {
+  triggerPokemonFormChange(pokemon: Pokemon, formChangeTriggerType: { new(...args: any[]): SpeciesFormChangeTrigger }, delayed: boolean = false, modal: boolean = false, disrespectChangeCheck: boolean = false): boolean {
+    console.log("form change code triggered");
     if (pokemonFormChanges.hasOwnProperty(pokemon.species.speciesId)) {
-      const matchingFormChange = pokemonFormChanges[pokemon.species.speciesId].find(fc => fc.findTrigger(formChangeTriggerType) && fc.canChange(pokemon));
+      let matchingFormChange = pokemonFormChanges[pokemon.species.speciesId].find(fc => fc.findTrigger(formChangeTriggerType) && fc.canChange(pokemon, disrespectChangeCheck));
+      //TODO disrespectChangeCheck is pretty awful, want that fixed, and the manual form checks as well
+      if (disrespectChangeCheck) {
+        matchingFormChange = pokemonFormChanges[pokemon.species.speciesId][2];
+      }
       if (matchingFormChange) {
         let phase: Phase;
         if (pokemon instanceof PlayerPokemon && !matchingFormChange.quiet) {

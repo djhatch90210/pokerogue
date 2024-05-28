@@ -34,5 +34,6 @@ export enum Biome {
   SNOWY_FOREST,
   ISLAND = 40,
   LABORATORY,
-  END = 50
+  END = 50,
+  FORBIDDEN_LAB = 51 // TODO, not sure what we're using these specific enum values for but it's got me worried
 }

@@ -3270,7 +3270,7 @@ export class EnemyPokemon extends Pokemon {
         new PokemonMove(Moves.SKETCH)
       ];
       break;
-    case (this.species.speciesId === Species.ETERNATUS):
+    case (this.species.speciesId === Species.ETERNATUS): //TODO, will need to update this for my mewtwo fight
       this.moveset = (formIndex !== undefined ? formIndex : this.formIndex)
         ? [
           new PokemonMove(Moves.DYNAMAX_CANNON),
@@ -3285,6 +3285,34 @@ export class EnemyPokemon extends Pokemon {
           new PokemonMove(Moves.COSMIC_POWER)
         ];
       break;
+    case (this.species.speciesId === Species.MEWTWO):
+      this.moveset = [
+        new PokemonMove(Moves.THUNDER),
+        new PokemonMove(Moves.PSYCHIC),
+        new PokemonMove(Moves.DARK_PULSE),
+        new PokemonMove(Moves.RECOVER, 0, -4)
+      ];
+      switch (formIndex) {
+      case 1:
+        this.moveset = [
+          new PokemonMove(Moves.PSYSTRIKE),
+          new PokemonMove(Moves.ICE_BEAM),
+          new PokemonMove(Moves.FLAMETHROWER),
+          new PokemonMove(Moves.RECOVER, 0, -4)
+        ];
+        break;
+      case 2:
+        this.moveset = [
+          new PokemonMove(Moves.LOW_KICK),
+          new PokemonMove(Moves.ZEN_HEADBUTT),
+          new PokemonMove(Moves.STONE_EDGE),
+          new PokemonMove(Moves.RECOVER, 0, -4)
+        ];
+        break;
+      default:
+        break;
+      }
+      break;  // Prevent falling through to default case
     default:
       super.generateAndPopulateMoveset();
       break;

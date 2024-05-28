@@ -45,7 +45,7 @@ import { vouchers } from "./system/voucher";
 import { loggedInUser, updateUserInfo } from "./account";
 import { PlayerGender, SessionSaveData } from "./system/game-data";
 import { addPokeballCaptureStars, addPokeballOpenParticles } from "./field/anims";
-import { SpeciesFormChangeActiveTrigger, SpeciesFormChangeManualTrigger, SpeciesFormChangeMoveLearnedTrigger, SpeciesFormChangePostMoveTrigger, SpeciesFormChangePreMoveTrigger } from "./data/pokemon-forms";
+import { SpeciesFormChangeActiveTrigger, SpeciesFormChangeManualTrigger, SpeciesFormChangeManualTriggerX, SpeciesFormChangeManualTriggerY, SpeciesFormChangeMoveLearnedTrigger, SpeciesFormChangePostMoveTrigger, SpeciesFormChangePreMoveTrigger } from "./data/pokemon-forms";
 import { battleSpecDialogue, getCharVariantFromDialogue, miscDialogue } from "./data/dialogue";
 import ModifierSelectUiHandler, { SHOP_OPTIONS_ROW_LIMIT } from "./ui/modifier-select-ui-handler";
 import { Setting } from "./system/settings";
@@ -830,7 +830,7 @@ export class EncounterPhase extends BattlePhase {
         this.scene.gameData.setPokemonSeen(enemyPokemon, true, battle.battleType === BattleType.TRAINER);
       }
 
-      if (enemyPokemon.species.speciesId === Species.ETERNATUS) {
+      if (enemyPokemon.species.speciesId === Species.ETERNATUS || (this.scene.arena.isFinalBiome() && enemyPokemon.species.speciesId === Species.MEWTWO)) {
         if ( (this.scene.gameMode.isClassic || this.scene.gameMode.isClassic100) && (battle.battleSpec === BattleSpec.FINAL_BOSS || this.scene.gameMode.isWaveFinal(battle.waveIndex))) {
           if (battle.battleSpec !== BattleSpec.FINAL_BOSS) {
             enemyPokemon.formIndex = 1;
@@ -1090,7 +1090,7 @@ export class EncounterPhase extends BattlePhase {
     case BattleSpec.FINAL_BOSS:
       const enemy = this.scene.getEnemyPokemon();
       this.scene.ui.showText(this.getEncounterMessage(), null, () => {
-        this.scene.ui.showDialogue(battleSpecDialogue[BattleSpec.FINAL_BOSS].encounter, enemy.species.name, null, () => {
+        this.scene.ui.showDialogue(battleSpecDialogue[BattleSpec.FINAL_BOSS][this.scene.arena.biomeType].encounter, enemy.species.name, null, () => {
           this.doEncounterCommon(false);
         });
       }, 1500, true);
@@ -1212,7 +1212,8 @@ export class SelectBiomePhase extends BattlePhase {
     if (((this.scene.gameMode.isClassic || this.scene.gameMode.isClassic100) && this.scene.gameMode.isWaveFinal(this.scene.currentBattle.waveIndex + 9))
       || (this.scene.gameMode.isDaily && this.scene.gameMode.isWaveFinal(this.scene.currentBattle.waveIndex))
       || (this.scene.gameMode.hasShortBiomes && !(this.scene.currentBattle.waveIndex % 50))) {
-      setNextBiome(Biome.END);
+      const finalBiome = Utils.randSeedInt(2);
+      setNextBiome(finalBiome === 0 ? Biome.END : Biome.FORBIDDEN_LAB);
     } else if (this.scene.gameMode.hasRandomBiomes) {
       setNextBiome(this.generateNextBiome());
     } else if (Array.isArray(biomeLinks[currentBiome])) {
@@ -1898,7 +1899,7 @@ export class CommandPhase extends FieldPhase {
       }
       break;
     case Command.BALL:
-      if (this.scene.arena.biomeType === Biome.END && (!(this.scene.gameMode.isClassic || this.scene.gameMode.isClassic100) || (this.scene.getEnemyField().filter(p => p.isActive(true)).some(p => !p.scene.gameData.dexData[p.species.speciesId].caughtAttr) && this.scene.gameData.getStarterCount(d => !!d.caughtAttr) < Object.keys(speciesStarters).length - 1))) {
+      if (this.scene.arena.isFinalBiome() && (!(this.scene.gameMode.isClassic || this.scene.gameMode.isClassic100) || (this.scene.getEnemyField().filter(p => p.isActive(true)).some(p => !p.scene.gameData.dexData[p.species.speciesId].caughtAttr) && this.scene.gameData.getStarterCount(d => !!d.caughtAttr) < Object.keys(speciesStarters).length - 1))) {
         this.scene.ui.setMode(Mode.COMMAND, this.fieldIndex);
         this.scene.ui.setMode(Mode.MESSAGE);
         this.scene.ui.showText(i18next.t("battle:noPokeballForce"), null, () => {
@@ -1944,7 +1945,7 @@ export class CommandPhase extends FieldPhase {
     case Command.POKEMON:
     case Command.RUN:
       const isSwitch = command === Command.POKEMON;
-      if (!isSwitch && this.scene.arena.biomeType === Biome.END) {
+      if (!isSwitch && this.scene.arena.isFinalBiome()) {
         this.scene.ui.setMode(Mode.COMMAND, this.fieldIndex);
         this.scene.ui.setMode(Mode.MESSAGE);
         this.scene.ui.showText(i18next.t("battle:noEscapeForce"), null, () => {
@@ -3478,9 +3479,10 @@ export class DamagePhase extends PokemonPhase {
     switch (this.scene.currentBattle.battleSpec) {
     case BattleSpec.FINAL_BOSS:
       const pokemon = this.getPokemon();
-      if (pokemon instanceof EnemyPokemon && pokemon.isBoss() && !pokemon.formIndex && pokemon.bossSegmentIndex < 1) {
+
+      if (pokemon instanceof EnemyPokemon && pokemon.isBoss() && !pokemon.formIndex && pokemon.bossSegmentIndex < 1 && pokemon.species.speciesId === Species.ETERNATUS) { //for eternatus
         this.scene.fadeOutBgm(Utils.fixedInt(2000), false);
-        this.scene.ui.showDialogue(battleSpecDialogue[BattleSpec.FINAL_BOSS].firstStageWin, pokemon.species.name, null, () => {
+        this.scene.ui.showDialogue(battleSpecDialogue[BattleSpec.FINAL_BOSS][this.scene.arena.biomeType].firstStageWin, pokemon.species.name, null, () => {
           this.scene.addEnemyModifier(getModifierType(modifierTypes.MINI_BLACK_HOLE).newModifier(pokemon) as PersistentModifier, false, true);
           pokemon.generateAndPopulateMoveset(1);
           this.scene.setFieldScale(0.75);
@@ -3497,8 +3499,41 @@ export class DamagePhase extends PokemonPhase {
           super.end();
         });
         return;
+      } else if (pokemon instanceof EnemyPokemon && pokemon.isBoss() && !pokemon.formIndex && pokemon.bossSegmentIndex < 1 && pokemon.species.speciesId === Species.MEWTWO) { //for eternatus
+        this.scene.fadeOutBgm(Utils.fixedInt(2000), false);
+        this.scene.ui.showDialogue(battleSpecDialogue[BattleSpec.FINAL_BOSS][this.scene.arena.biomeType].firstStageWin, pokemon.species.name, null, () => {
+          this.scene.addEnemyModifier(getModifierType(modifierTypes.MINI_BLACK_HOLE).newModifier(pokemon) as PersistentModifier, false, true);
+          pokemon.generateAndPopulateMoveset(1);
+          this.scene.setFieldScale(0.75);
+          this.scene.triggerPokemonFormChange(pokemon, SpeciesFormChangeManualTriggerY, false);
+          this.scene.currentBattle.double = true;
+          const availablePartyMembers = this.scene.getParty().filter(p => !p.isFainted());
+          if (availablePartyMembers.length > 1) {
+            this.scene.pushPhase(new ToggleDoublePositionPhase(this.scene, true));
+            if (!availablePartyMembers[1].isOnField()) {
+              this.scene.pushPhase(new SummonPhase(this.scene, 1));
+            }
+          }
+
+          super.end();
+        });
+        return;
+      } else if (pokemon instanceof EnemyPokemon && pokemon.isBoss() && pokemon.formIndex && pokemon.formIndex === 2 && pokemon.bossSegmentIndex < 1 && pokemon.species.speciesId === Species.MEWTWO) { //for eternatus
+        this.scene.fadeOutBgm(Utils.fixedInt(2000), false);
+        pokemon.generateAndPopulateMoveset(2);
+        pokemon.hp = pokemon.hp + 100;
+        this.scene.ui.showDialogue(battleSpecDialogue[BattleSpec.FINAL_BOSS][this.scene.arena.biomeType].secondStageWin, pokemon.species.name, null, () => {
+          this.scene.setFieldScale(0.75);
+          this.scene.triggerPokemonFormChange(pokemon, SpeciesFormChangeManualTriggerX, false, false, true);
+
+          super.end();
+        });
+        return;
       }
+
       break;
+
+
     }
 
     super.end();
@@ -3630,10 +3665,11 @@ export class FaintPhase extends PokemonPhase {
     case BattleSpec.FINAL_BOSS:
       if (!this.player) {
         const enemy = this.getPokemon();
-        if (enemy.formIndex) {
-          this.scene.ui.showDialogue(battleSpecDialogue[BattleSpec.FINAL_BOSS].secondStageWin, enemy.species.name, null, () => this.doFaint());
+        if (enemy.formIndex && (enemy.species.speciesId === Species.ETERNATUS )) {
+          this.scene.ui.showDialogue(battleSpecDialogue[BattleSpec.FINAL_BOSS][this.scene.arena.biomeType].secondStageWin, enemy.species.name, null, () => this.doFaint());
+        } else if (enemy.formIndex && enemy.hp <= 0 && ((enemy.formIndex === 1 && Species.MEWTWO) )) {
+          this.scene.ui.showDialogue(battleSpecDialogue[BattleSpec.FINAL_BOSS][this.scene.arena.biomeType].thirdStageWin, enemy.species.name, null, () => this.doFaint());
         } else {
-          // Final boss' HP threshold has been bypassed; cancel faint and force check for 2nd phase
           enemy.hp++;
           this.scene.unshiftPhase(new DamagePhase(this.scene, enemy.getBattlerIndex(), 0, HitResult.OTHER));
           this.end();

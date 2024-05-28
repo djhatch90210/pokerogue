@@ -9,11 +9,11 @@ import * as Overrides from "./overrides";
 
 export enum GameModes {
   CLASSIC,
-  CLASSICDOUBLE,
   ENDLESS,
   SPLICED_ENDLESS,
   DAILY,
   CLASSIC100,
+  CLASSICDOUBLE,
   CLASSIC100DOUBLE
 }
 
@@ -110,7 +110,7 @@ export class GameMode implements GameModeConfig {
     }
     if (this.isClassic && (waveIndex % 30) === (arena.scene.offsetGym ? 0 : 20) && !this.isWaveFinal(waveIndex)) {
       return true;
-    } else if (this.isClassic100 && waveIndex % 10 === 0 && !this.isWaveFinal(waveIndex) && waveIndex > 9 && waveIndex < 90) {
+    } else if (this.isClassic100 && waveIndex % 10 === 0 && !this.isWaveFinal(waveIndex) && waveIndex > 9 && waveIndex < 80) {
       return true;
     } else if (waveIndex % 10 !== 1 && this.isClassic100 ? waveIndex % 10 !== 5 : waveIndex % 10) {
       const trainerChance = arena.getTrainerChance();
@@ -142,21 +142,21 @@ export class GameMode implements GameModeConfig {
     return false;
   }
 
-  isTrainerBoss(waveIndex: integer, biomeType: Biome, offsetGym: boolean): boolean {
+  isTrainerBoss(waveIndex: integer, isFinalBiome: boolean, offsetGym: boolean): boolean {
     switch (this.modeId) {
     case GameModes.DAILY:
       return waveIndex > 10 && waveIndex < 50 && !(waveIndex % 10);
     case GameModes.CLASSIC100:
-      return waveIndex > 9 && waveIndex < 90 && waveIndex % 10 === 0 && (biomeType !== Biome.END || this.isClassic100 || this.isWaveFinal(waveIndex));
+      return waveIndex > 9 && waveIndex < 90 && waveIndex % 10 === 0 && (!isFinalBiome || this.isClassic100 || this.isWaveFinal(waveIndex));
     default:
-      return (waveIndex % 30) === (offsetGym ? 0 : 20) && (biomeType !== Biome.END || this.isClassic || this.isWaveFinal(waveIndex));
+      return (waveIndex % 30) === (offsetGym ? 0 : 20) && (!isFinalBiome || this.isClassic || this.isWaveFinal(waveIndex));
     }
   }
 
   getOverrideSpecies(waveIndex: integer): PokemonSpecies {
     if (this.isDaily && this.isWaveFinal(waveIndex)) {
       const allFinalBossSpecies = allSpecies.filter(s => (s.subLegendary || s.legendary || s.mythical)
-        && s.baseTotal >= 600 && s.speciesId !== Species.ETERNATUS && s.speciesId !== Species.ARCEUS);
+        && s.baseTotal >= 600 && s.speciesId !== Species.ETERNATUS && s.speciesId !== Species.ARCEUS && s.speciesId !== Species.MEWTWO);
       return Utils.randSeedItem(allFinalBossSpecies);
     }
 

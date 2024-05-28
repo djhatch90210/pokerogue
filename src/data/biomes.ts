@@ -21,6 +21,8 @@ export function getBiomeName(biome: Biome | -1) {
     return i18next.t("biome:ABYSS");
   case Biome.END:
     return i18next.t("biome:END");
+  case Biome.FORBIDDEN_LAB:
+    return i18next.t("biome:FORBIDDEN_LAB");
   default:
     return i18next.t(`biome:${Biome[biome].toUpperCase()}`);
   }
@@ -1620,6 +1622,31 @@ export const biomePokemonPools: BiomePokemonPools = {
     [BiomePoolTier.BOSS_RARE]: { [TimeOfDay.DAWN]: [], [TimeOfDay.DAY]: [], [TimeOfDay.DUSK]: [], [TimeOfDay.NIGHT]: [], [TimeOfDay.ALL]: [] },
     [BiomePoolTier.BOSS_SUPER_RARE]: { [TimeOfDay.DAWN]: [], [TimeOfDay.DAY]: [], [TimeOfDay.DUSK]: [], [TimeOfDay.NIGHT]: [], [TimeOfDay.ALL]: [] },
     [BiomePoolTier.BOSS_ULTRA_RARE]: { [TimeOfDay.DAWN]: [], [TimeOfDay.DAY]: [], [TimeOfDay.DUSK]: [], [TimeOfDay.NIGHT]: [], [TimeOfDay.ALL]: [] }
+  },
+  [Biome.FORBIDDEN_LAB]: {
+    [BiomePoolTier.COMMON]: {
+      [TimeOfDay.DAWN]: [],
+      [TimeOfDay.DAY]: [],
+      [TimeOfDay.DUSK]: [],
+      [TimeOfDay.NIGHT]: [],
+      [TimeOfDay.ALL]: [
+        Species.TYPE_NULL,
+        Species.IRON_TREADS,
+        Species.IRON_BUNDLE,
+        Species.IRON_HANDS,
+        Species.IRON_JUGULIS,
+        Species.IRON_MOTH,
+        Species.IRON_THORNS
+      ]
+    },
+    [BiomePoolTier.UNCOMMON]: { [TimeOfDay.DAWN]: [], [TimeOfDay.DAY]: [], [TimeOfDay.DUSK]: [], [TimeOfDay.NIGHT]: [], [TimeOfDay.ALL]: [ Species.IRON_BOULDER, Species.IRON_CROWN ] },
+    [BiomePoolTier.RARE]: { [TimeOfDay.DAWN]: [], [TimeOfDay.DAY]: [], [TimeOfDay.DUSK]: [], [TimeOfDay.NIGHT]: [], [TimeOfDay.ALL]: [ Species.MAGEARNA, Species.SILVALLY, Species.GENESECT, ] },
+    [BiomePoolTier.SUPER_RARE]: { [TimeOfDay.DAWN]: [], [TimeOfDay.DAY]: [], [TimeOfDay.DUSK]: [], [TimeOfDay.NIGHT]: [], [TimeOfDay.ALL]: [] },
+    [BiomePoolTier.ULTRA_RARE]: { [TimeOfDay.DAWN]: [], [TimeOfDay.DAY]: [], [TimeOfDay.DUSK]: [], [TimeOfDay.NIGHT]: [], [TimeOfDay.ALL]: [] },
+    [BiomePoolTier.BOSS]: { [TimeOfDay.DAWN]: [], [TimeOfDay.DAY]: [], [TimeOfDay.DUSK]: [], [TimeOfDay.NIGHT]: [], [TimeOfDay.ALL]: [ Species.MEWTWO ] },
+    [BiomePoolTier.BOSS_RARE]: { [TimeOfDay.DAWN]: [], [TimeOfDay.DAY]: [], [TimeOfDay.DUSK]: [], [TimeOfDay.NIGHT]: [], [TimeOfDay.ALL]: [] },
+    [BiomePoolTier.BOSS_SUPER_RARE]: { [TimeOfDay.DAWN]: [], [TimeOfDay.DAY]: [], [TimeOfDay.DUSK]: [], [TimeOfDay.NIGHT]: [], [TimeOfDay.ALL]: [] },
+    [BiomePoolTier.BOSS_ULTRA_RARE]: { [TimeOfDay.DAWN]: [], [TimeOfDay.DAY]: [], [TimeOfDay.DUSK]: [], [TimeOfDay.NIGHT]: [], [TimeOfDay.ALL]: [] }
   }
 };
 
@@ -1999,6 +2026,17 @@ export const biomeTrainerPools: BiomeTrainerPools = {
     [BiomePoolTier.BOSS_ULTRA_RARE]: []
   },
   [Biome.END]: {
+    [BiomePoolTier.COMMON]: [],
+    [BiomePoolTier.UNCOMMON]: [],
+    [BiomePoolTier.RARE]: [],
+    [BiomePoolTier.SUPER_RARE]: [],
+    [BiomePoolTier.ULTRA_RARE]: [],
+    [BiomePoolTier.BOSS]: [],
+    [BiomePoolTier.BOSS_RARE]: [],
+    [BiomePoolTier.BOSS_SUPER_RARE]: [],
+    [BiomePoolTier.BOSS_ULTRA_RARE]: []
+  },
+  [Biome.FORBIDDEN_LAB]: {
     [BiomePoolTier.COMMON]: [],
     [BiomePoolTier.UNCOMMON]: [],
     [BiomePoolTier.RARE]: [],
@@ -2774,7 +2812,8 @@ export function initBiomes() {
     ]
     ],
     [ Species.MEWTWO, Type.PSYCHIC, -1, [
-      [ Biome.LABORATORY, BiomePoolTier.BOSS_ULTRA_RARE ]
+      [ Biome.LABORATORY, BiomePoolTier.BOSS_ULTRA_RARE ],
+      [ Biome.FORBIDDEN_LAB, BiomePoolTier.BOSS ]
     ]
     ],
     [ Species.MEW, Type.PSYCHIC, -1, [ ]
@@ -5154,7 +5193,8 @@ export function initBiomes() {
     ],
     [ Species.GENESECT, Type.BUG, Type.STEEL, [
       [ Biome.FACTORY, BiomePoolTier.ULTRA_RARE ],
-      [ Biome.FACTORY, BiomePoolTier.BOSS_SUPER_RARE ]
+      [ Biome.FACTORY, BiomePoolTier.BOSS_SUPER_RARE ],
+      [ Biome.FORBIDDEN_LAB, BiomePoolTier.RARE ]
     ]
     ],
     [ Species.CHESPIN, Type.GRASS, -1, [
@@ -5721,11 +5761,13 @@ export function initBiomes() {
     ]
     ],
     [ Species.TYPE_NULL, Type.NORMAL, -1, [
-      [ Biome.LABORATORY, BiomePoolTier.ULTRA_RARE ]
+      [ Biome.LABORATORY, BiomePoolTier.ULTRA_RARE ],
+      [ Biome.FORBIDDEN_LAB, BiomePoolTier.COMMON ]
     ]
     ],
     [ Species.SILVALLY, Type.NORMAL, -1, [
-      [ Biome.LABORATORY, BiomePoolTier.BOSS_SUPER_RARE ]
+      [ Biome.LABORATORY, BiomePoolTier.BOSS_SUPER_RARE ],
+      [ Biome.FORBIDDEN_LAB, BiomePoolTier.RARE ]
     ]
     ],
     [ Species.MINIOR, Type.ROCK, Type.FLYING, [
@@ -5858,7 +5900,8 @@ export function initBiomes() {
     ],
     [ Species.MAGEARNA, Type.STEEL, Type.FAIRY, [
       [ Biome.FACTORY, BiomePoolTier.ULTRA_RARE ],
-      [ Biome.FACTORY, BiomePoolTier.BOSS_SUPER_RARE ]
+      [ Biome.FACTORY, BiomePoolTier.BOSS_SUPER_RARE ],
+      [ Biome.FORBIDDEN_LAB, BiomePoolTier.RARE ]
     ]
     ],
     [ Species.MARSHADOW, Type.FIGHTING, Type.GHOST, [
@@ -6716,27 +6759,33 @@ export function initBiomes() {
     ]
     ],
     [ Species.IRON_TREADS, Type.GROUND, Type.STEEL, [
-      [ Biome.END, BiomePoolTier.COMMON ]
+      [ Biome.END, BiomePoolTier.COMMON ],
+      [ Biome.FORBIDDEN_LAB, BiomePoolTier.RARE ]
     ]
     ],
     [ Species.IRON_BUNDLE, Type.ICE, Type.WATER, [
-      [ Biome.END, BiomePoolTier.COMMON ]
+      [ Biome.END, BiomePoolTier.COMMON ],
+      [ Biome.FORBIDDEN_LAB, BiomePoolTier.RARE ]
     ]
     ],
     [ Species.IRON_HANDS, Type.FIGHTING, Type.ELECTRIC, [
-      [ Biome.END, BiomePoolTier.COMMON ]
+      [ Biome.END, BiomePoolTier.COMMON ],
+      [ Biome.FORBIDDEN_LAB, BiomePoolTier.RARE ]
     ]
     ],
     [ Species.IRON_JUGULIS, Type.DARK, Type.FLYING, [
-      [ Biome.END, BiomePoolTier.COMMON ]
+      [ Biome.END, BiomePoolTier.COMMON ],
+      [ Biome.FORBIDDEN_LAB, BiomePoolTier.RARE ]
     ]
     ],
     [ Species.IRON_MOTH, Type.FIRE, Type.POISON, [
-      [ Biome.END, BiomePoolTier.COMMON ]
+      [ Biome.END, BiomePoolTier.COMMON ],
+      [ Biome.FORBIDDEN_LAB, BiomePoolTier.RARE ]
     ]
     ],
     [ Species.IRON_THORNS, Type.ROCK, Type.ELECTRIC, [
-      [ Biome.END, BiomePoolTier.COMMON ]
+      [ Biome.END, BiomePoolTier.COMMON ],
+      [ Biome.FORBIDDEN_LAB, BiomePoolTier.RARE ]
     ]
     ],
     [ Species.FRIGIBAX, Type.DRAGON, Type.ICE, [
@@ -6786,7 +6835,8 @@ export function initBiomes() {
     ]
     ],
     [ Species.IRON_VALIANT, Type.FAIRY, Type.FIGHTING, [
-      [ Biome.END, BiomePoolTier.UNCOMMON ]
+      [ Biome.END, BiomePoolTier.UNCOMMON ],
+      [ Biome.FORBIDDEN_LAB, BiomePoolTier.RARE ]
     ]
     ],
     [ Species.KORAIDON, Type.FIGHTING, Type.DRAGON, [
@@ -6802,7 +6852,8 @@ export function initBiomes() {
     ]
     ],
     [ Species.IRON_LEAVES, Type.GRASS, Type.PSYCHIC, [
-      [ Biome.END, BiomePoolTier.RARE ]
+      [ Biome.END, BiomePoolTier.RARE ],
+      [ Biome.FORBIDDEN_LAB, BiomePoolTier.RARE ]
     ]
     ],
     [ Species.DIPPLIN, Type.GRASS, Type.DRAGON, [
@@ -6855,11 +6906,13 @@ export function initBiomes() {
     ]
     ],
     [ Species.IRON_BOULDER, Type.ROCK, Type.PSYCHIC, [
-      [ Biome.END, BiomePoolTier.RARE ]
+      [ Biome.END, BiomePoolTier.RARE ],
+      [ Biome.FORBIDDEN_LAB, BiomePoolTier.UNCOMMON ]
     ]
     ],
     [ Species.IRON_CROWN, Type.STEEL, Type.PSYCHIC, [
-      [ Biome.END, BiomePoolTier.RARE ]
+      [ Biome.END, BiomePoolTier.RARE ],
+      [ Biome.FORBIDDEN_LAB, BiomePoolTier.UNCOMMON ]
     ]
     ],
     [ Species.TERAPAGOS, Type.NORMAL, -1, [
@@ -7698,7 +7751,7 @@ export function initBiomes() {
       ? pokemonEvolutions[speciesId]
       : [];
 
-    if (!biomeEntries.filter(b => b[0] !== Biome.END).length && !speciesEvolutions.filter(es => !!((pokemonBiomes.find(p => p[0] === es.speciesId))[3] as any[]).filter(b => b[0] !== Biome.END).length).length) {
+    if (!biomeEntries.filter(b => b[0] !== (Biome.END || Biome.FORBIDDEN_LAB)).length && !speciesEvolutions.filter(es => !!((pokemonBiomes.find(p => p[0] === es.speciesId))[3] as any[]).filter(b => b[0] !== (Biome.END || Biome.FORBIDDEN_LAB)).length).length) {
       uncatchableSpecies.push(speciesId);
     }
 

@@ -1,6 +1,7 @@
 import {trainerConfigs} from "./trainer-config";
 import {TrainerType} from "./enums/trainer-type";
 import {BattleSpec} from "../enums/battle-spec";
+import { Biome } from "./enums/biome";
 
 export interface TrainerTypeMessages {
     encounter?: string | string[],
@@ -2466,17 +2467,34 @@ export const doubleBattleDialogue = {
 
 export const battleSpecDialogue = {
   [BattleSpec.FINAL_BOSS]: {
-    encounter: `It appears the time has finally come once again.\nYou know why you have come here, do you not?
-               $You were drawn here, because you have been here before.\nCountless times.
-               $Though, perhaps it can be counted.\nTo be precise, this is in fact your 5,643,853rd cycle.
-               $Each cycle your mind reverts to its former state.\nEven so, somehow, remnants of your former selves remain.
-               $Until now you have yet to succeed, but I sense a different presence in you this time.\n
-               $You are the only one here, though it is as if there is… another.
-               $Will you finally prove a formidable challenge to me?\nThe challenge I have longed for for millennia?
-               $We begin.`,
-    firstStageWin: `I see. The presence I felt was indeed real.\nIt appears I no longer need to hold back.
-                   $Do not disappoint me.`,
-    secondStageWin: "…Magnificent."
+    [Biome.END]: {
+      encounter: `It appears the time has finally come once again.\nYou know why you have come here, do you not?
+                $You were drawn here, because you have been here before.\nCountless times.
+                $Though, perhaps it can be counted.\nTo be precise, this is in fact your 5,643,853rd cycle.
+                $Each cycle your mind reverts to its former state.\nEven so, somehow, remnants of your former selves remain.
+                $Until now you have yet to succeed, but I sense a different presence in you this time.\n
+                $You are the only one here, though it is as if there is… another.
+                $Will you finally prove a formidable challenge to me?\nThe challenge I have longed for for millennia?
+                $We begin.`,
+      firstStageWin: `I see. The presence I felt was indeed real.\nIt appears I no longer need to hold back.
+                    $Do not disappoint me.`,
+      secondStageWin: "…Magnificent."
+    },
+    [Biome.FORBIDDEN_LAB]: {
+      encounter: `You have come a long, long way.
+                  $And to what end? 
+                  $In this endless, recurring chaos.\nWhy did you keep pushing forwards? 
+                  $Was it for glory?\nWas it merely to test your own power?
+                  $If so, then you have come to the right place.
+                  $There is no power in this world greater than mine.`,
+      firstStageWin: `There is a great strength to you.
+                    $However, you have not even begun to witness my true strength.
+                    $Behold.`,
+      secondStageWin: `They dreamed of creating the world's strongest Pokémon...
+                      $..And they succeeded..`,
+      thirdStageWin: `So be it...
+                      $..To the powerful...\ngoes everything`
+    },
   }
 };
 

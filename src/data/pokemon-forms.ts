@@ -109,7 +109,11 @@ export class SpeciesFormChange {
     this.conditions = conditions;
   }
 
-  canChange(pokemon: Pokemon): boolean {
+  canChange(pokemon: Pokemon, disrespectChangeCheck: boolean = false): boolean {
+    if (disrespectChangeCheck) {
+      return true;
+    }
+
     if (pokemon.species.speciesId !== this.speciesId) {
       return false;
     }
@@ -178,6 +182,20 @@ export abstract class SpeciesFormChangeTrigger {
 export class SpeciesFormChangeManualTrigger extends SpeciesFormChangeTrigger {
   canChange(pokemon: Pokemon): boolean {
     return true;
+  }
+}
+
+//TODO worst code ever
+export class SpeciesFormChangeManualTriggerY extends SpeciesFormChangeTrigger {
+  canChange(pokemon: Pokemon): boolean {
+    return true;
+  }
+}
+
+//TODO worst code ever
+export class SpeciesFormChangeManualTriggerX extends SpeciesFormChangeTrigger {
+  canChange(pokemon: Pokemon): boolean {
+    return pokemon.formIndex === 2 ? true : false;
   }
 }
 
@@ -406,6 +424,8 @@ export const pokemonFormChanges: PokemonFormChanges = {
     new SpeciesFormChange(Species.AERODACTYL, "", SpeciesFormKey.MEGA, new SpeciesFormChangeItemTrigger(FormChangeItem.AERODACTYLITE))
   ],
   [Species.MEWTWO]: [
+    new SpeciesFormChange(Species.MEWTWO, "", SpeciesFormKey.MEGA_Y, new SpeciesFormChangeManualTriggerY()),
+    new SpeciesFormChange(Species.MEWTWO, "", SpeciesFormKey.MEGA_X, new SpeciesFormChangeManualTriggerX()),
     new SpeciesFormChange(Species.MEWTWO, "", SpeciesFormKey.MEGA_X, new SpeciesFormChangeItemTrigger(FormChangeItem.MEWTWONITE_X)),
     new SpeciesFormChange(Species.MEWTWO, "", SpeciesFormKey.MEGA_Y, new SpeciesFormChangeItemTrigger(FormChangeItem.MEWTWONITE_Y))
   ],

@@ -65,13 +65,17 @@ export class Arena {
     }
   }
 
+  isFinalBiome(): boolean {
+    return (this.biomeType === Biome.END || this.biomeType === Biome.FORBIDDEN_LAB);
+  }
+
   randomSpecies(waveIndex: integer, level: integer, attempt?: integer): PokemonSpecies {
     const overrideSpecies = this.scene.gameMode.getOverrideSpecies(waveIndex);
     if (overrideSpecies) {
       return overrideSpecies;
     }
     const isBoss = !!this.scene.getEncounterBossSegments(waveIndex, level) && !!this.pokemonPool[BiomePoolTier.BOSS].length
-      && (this.biomeType !== Biome.END || this.scene.gameMode.isClassic || this.scene.gameMode.isClassic100 || this.scene.gameMode.isWaveFinal(waveIndex)); //why a classic check here? look into it
+      && (!this.isFinalBiome() || this.scene.gameMode.isClassic || this.scene.gameMode.isClassic100 || this.scene.gameMode.isWaveFinal(waveIndex)); //why a classic check here? look into it
     const tierValue = Utils.randSeedInt(!isBoss ? 512 : 64);
     let tier = !isBoss
       ? tierValue >= 156 ? BiomePoolTier.COMMON : tierValue >= 32 ? BiomePoolTier.UNCOMMON : tierValue >= 6 ? BiomePoolTier.RARE : tierValue >= 1 ? BiomePoolTier.SUPER_RARE : BiomePoolTier.ULTRA_RARE
@@ -142,7 +146,7 @@ export class Arena {
 
   randomTrainerType(waveIndex: integer): TrainerType {
     const isBoss = !!this.trainerPool[BiomePoolTier.BOSS].length
-      && this.scene.gameMode.isTrainerBoss(waveIndex, this.biomeType, this.scene.offsetGym);
+      && this.scene.gameMode.isTrainerBoss(waveIndex, this.isFinalBiome(), this.scene.offsetGym);
     console.log(isBoss, this.trainerPool);
     const tierValue = Utils.randSeedInt(!isBoss ? 512 : 64);
     let tier = !isBoss
@@ -252,6 +256,8 @@ export class Arena {
     case Biome.WASTELAND:
     case Biome.END:
       return Type.DRAGON;
+    case Biome.FORBIDDEN_LAB:
+      return Type.PSYCHIC;
     case Biome.ABYSS:
       return Type.DARK;
     default:
@@ -264,6 +270,8 @@ export class Arena {
     case Biome.SPACE:
       return 1;
     case Biome.END:
+      return 0;
+    case Biome.FORBIDDEN_LAB:
       return 0;
     }
 
@@ -479,9 +487,12 @@ export class Arena {
     switch (this.biomeType) {
     case Biome.ABYSS:
     case Biome.SPACE:
+    case Biome.FORBIDDEN_LAB:
+      return this.getDayTint();
     case Biome.END:
       return this.getDayTint();
     }
+
 
     if (!this.isOutside()) {
       return [ 64, 64, 64 ];

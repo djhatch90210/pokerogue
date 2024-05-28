@@ -12,6 +12,7 @@ import { PlayerGender } from "./system/game-data";
 import { MoneyMultiplierModifier, PokemonHeldItemModifier } from "./modifier/modifier";
 import { PokeballType } from "./data/pokeball";
 import {trainerConfigs} from "#app/data/trainer-config";
+import { Biome } from "./data/enums/biome";
 
 export enum BattleType {
     WILD,
@@ -63,10 +64,12 @@ export default class Battle {
   private battleSeedState: string;
   public moneyScattered: number;
   public lastUsedPokeball: PokeballType;
+  public battleSpecBossType: Species;
+  public currentBiome: Biome;
 
   private rngCounter: integer = 0;
 
-  constructor(gameMode: GameMode, waveIndex: integer, battleType: BattleType, trainer: Trainer, double: boolean) {
+  constructor(gameMode: GameMode, waveIndex: integer, battleType: BattleType, trainer: Trainer, double: boolean, currentBiome? : Biome) {
     this.gameMode = gameMode;
     this.waveIndex = waveIndex;
     this.battleType = battleType;
@@ -89,6 +92,7 @@ export default class Battle {
     this.battleSeedState = null;
     this.moneyScattered = 0;
     this.lastUsedPokeball = null;
+    this.currentBiome = currentBiome;
   }
 
   private initBattleSpec(): void {
