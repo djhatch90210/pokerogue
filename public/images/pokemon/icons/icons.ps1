@@ -1400,6 +1400,9 @@ $pkmnTable = @{
 	"tauros-aqua-paldea" = "8128-aqua"
 	"wooper-paldea" = "8194"
 	"bloodmoon-ursaluna" = "8901"
+	"dingus" = "9999"
+	"dingus-mega-x" = "9999-mega-x"
+	"dingus-mega-y" = "9999-mega-y"
 }
 
 $dir = "."

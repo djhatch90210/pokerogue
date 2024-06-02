@@ -15127,6 +15127,12 @@ export const pokemonSpeciesLevelMoves: PokemonSpeciesLevelMoves = {
     [ 80, Moves.HYPER_BEAM ],
     [ 88, Moves.OUTRAGE ],
   ],
+  [Species.DINGUS]: [
+    [ 1, Moves.SPLASH ],
+    [ 1, Moves.CONFUSE_RAY ],
+    [ 72, Moves.RECOVER ],
+    [ 88, Moves.OUTRAGE ],
+  ],
   [Species.KUBFU]: [
     [ 1, Moves.LEER ],
     [ 1, Moves.ROCK_SMASH ],

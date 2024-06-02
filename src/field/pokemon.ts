@@ -3313,6 +3313,34 @@ export class EnemyPokemon extends Pokemon {
         break;
       }
       break;  // Prevent falling through to default case
+    case (this.species.speciesId === Species.DINGUS):
+      this.moveset = [
+        new PokemonMove(Moves.SPLASH),
+        new PokemonMove(Moves.CONFUSE_RAY),
+        new PokemonMove(Moves.CONFUSION),
+        new PokemonMove(Moves.RECOVER, 0, -4)
+      ];
+      switch (formIndex) {
+      case 1:
+        this.moveset = [
+          new PokemonMove(Moves.DOUBLE_SLAP),
+          new PokemonMove(Moves.PYRO_BALL),
+          new PokemonMove(Moves.ICE_BALL),
+          new PokemonMove(Moves.RECOVER, 0, -4)
+        ];
+        break;
+      case 2:
+        this.moveset = [
+          new PokemonMove(Moves.SPIN_OUT),
+          new PokemonMove(Moves.BULLDOZE),
+          new PokemonMove(Moves.SHIFT_GEAR),
+          new PokemonMove(Moves.FLY)
+        ];
+        break;
+      default:
+        break;
+      }
+      break;  // Prevent falling through to default case
     default:
       super.generateAndPopulateMoveset();
       break;

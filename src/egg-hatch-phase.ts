@@ -409,7 +409,7 @@ export class EggHatchPhase extends Phase {
           break;
         }
 
-        const ignoredSpecies = [ Species.PHIONE, Species.MANAPHY, Species.ETERNATUS ];
+        const ignoredSpecies = [ Species.PHIONE, Species.MANAPHY, Species.ETERNATUS, Species.DINGUS ];
 
         const speciesPool = Object.keys(speciesStarters)
           .filter(s => speciesStarters[s] >= minStarterValue && speciesStarters[s] <= maxStarterValue)

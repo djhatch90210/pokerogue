@@ -2163,6 +2163,7 @@ export enum Species {
   PALDEA_WOOPER = 8194,
   /**{@link https://bulbapedia.bulbagarden.net/wiki/Ursaluna_(Pokémon) | Source} */
   BLOODMOON_URSALUNA = 8901,
+  DINGUS = 9999
 }
 
 export const defaultStarterSpecies: Species[] = [

@@ -830,7 +830,7 @@ export class EncounterPhase extends BattlePhase {
         this.scene.gameData.setPokemonSeen(enemyPokemon, true, battle.battleType === BattleType.TRAINER);
       }
 
-      if (enemyPokemon.species.speciesId === Species.ETERNATUS || (this.scene.arena.isFinalBiome() && enemyPokemon.species.speciesId === Species.MEWTWO)) {
+      if (enemyPokemon.species.speciesId === Species.ETERNATUS || enemyPokemon.species.speciesId === Species.DINGUS || (this.scene.arena.isFinalBiome() && enemyPokemon.species.speciesId === Species.MEWTWO)) {
         if ( (this.scene.gameMode.isClassic || this.scene.gameMode.isClassic100) && (battle.battleSpec === BattleSpec.FINAL_BOSS || this.scene.gameMode.isWaveFinal(battle.waveIndex))) {
           if (battle.battleSpec !== BattleSpec.FINAL_BOSS) {
             enemyPokemon.formIndex = 1;
@@ -1212,8 +1212,20 @@ export class SelectBiomePhase extends BattlePhase {
     if (((this.scene.gameMode.isClassic || this.scene.gameMode.isClassic100) && this.scene.gameMode.isWaveFinal(this.scene.currentBattle.waveIndex + 9))
       || (this.scene.gameMode.isDaily && this.scene.gameMode.isWaveFinal(this.scene.currentBattle.waveIndex))
       || (this.scene.gameMode.hasShortBiomes && !(this.scene.currentBattle.waveIndex % 50))) {
-      const finalBiome = Utils.randSeedInt(2);
-      setNextBiome(finalBiome === 0 ? Biome.END : Biome.FORBIDDEN_LAB);
+      //const finalBiome = Utils.randSeedInt(3);
+      const finalBiome = 2;
+      console.log(finalBiome);
+      switch (finalBiome) {
+      case 0:
+        setNextBiome(Biome.END);
+        break;
+      case 1:
+        setNextBiome(Biome.FORBIDDEN_LAB);
+        break;
+      case 2:
+        setNextBiome(Biome.TERRIBLE);
+        break;
+      }
     } else if (this.scene.gameMode.hasRandomBiomes) {
       setNextBiome(this.generateNextBiome());
     } else if (Array.isArray(biomeLinks[currentBiome])) {
@@ -3499,7 +3511,7 @@ export class DamagePhase extends PokemonPhase {
           super.end();
         });
         return;
-      } else if (pokemon instanceof EnemyPokemon && pokemon.isBoss() && !pokemon.formIndex && pokemon.bossSegmentIndex < 1 && pokemon.species.speciesId === Species.MEWTWO) { //for eternatus
+      } else if (pokemon instanceof EnemyPokemon && pokemon.isBoss() && !pokemon.formIndex && pokemon.bossSegmentIndex < 1 && pokemon.species.speciesId === Species.MEWTWO) { //for mewtwo
         this.scene.fadeOutBgm(Utils.fixedInt(2000), false);
         this.scene.ui.showDialogue(battleSpecDialogue[BattleSpec.FINAL_BOSS][this.scene.arena.biomeType].firstStageWin, pokemon.species.name, null, () => {
           this.scene.addEnemyModifier(getModifierType(modifierTypes.MINI_BLACK_HOLE).newModifier(pokemon) as PersistentModifier, false, true);
@@ -3518,7 +3530,39 @@ export class DamagePhase extends PokemonPhase {
           super.end();
         });
         return;
-      } else if (pokemon instanceof EnemyPokemon && pokemon.isBoss() && pokemon.formIndex && pokemon.formIndex === 2 && pokemon.bossSegmentIndex < 1 && pokemon.species.speciesId === Species.MEWTWO) { //for eternatus
+      } else if (pokemon instanceof EnemyPokemon && pokemon.isBoss() && pokemon.formIndex && pokemon.formIndex === 2 && pokemon.bossSegmentIndex < 1 && pokemon.species.speciesId === Species.MEWTWO) { //for mewtwo
+        this.scene.fadeOutBgm(Utils.fixedInt(2000), false);
+        pokemon.generateAndPopulateMoveset(2);
+        pokemon.hp = pokemon.hp + 100;
+        this.scene.ui.showDialogue(battleSpecDialogue[BattleSpec.FINAL_BOSS][this.scene.arena.biomeType].secondStageWin, pokemon.species.name, null, () => {
+          this.scene.setFieldScale(0.75);
+          this.scene.triggerPokemonFormChange(pokemon, SpeciesFormChangeManualTriggerX, false, false, true);
+
+          super.end();
+        });
+        return;
+      } else if (pokemon instanceof EnemyPokemon && pokemon.isBoss() && !pokemon.formIndex && pokemon.bossSegmentIndex < 1 && pokemon.species.speciesId === Species.DINGUS) { //for DINGUS
+        console.log(pokemon.formIndex);
+        this.scene.fadeOutBgm(Utils.fixedInt(2000), false);
+        this.scene.ui.showDialogue(battleSpecDialogue[BattleSpec.FINAL_BOSS][this.scene.arena.biomeType].firstStageWin, pokemon.species.name, null, () => {
+          this.scene.addEnemyModifier(getModifierType(modifierTypes.MINI_BLACK_HOLE).newModifier(pokemon) as PersistentModifier, false, true);
+          pokemon.generateAndPopulateMoveset(1);
+          this.scene.setFieldScale(0.75);
+          this.scene.triggerPokemonFormChange(pokemon, SpeciesFormChangeManualTriggerY, false);
+          this.scene.currentBattle.double = true;
+          const availablePartyMembers = this.scene.getParty().filter(p => !p.isFainted());
+          if (availablePartyMembers.length > 1) {
+            this.scene.pushPhase(new ToggleDoublePositionPhase(this.scene, true));
+            if (!availablePartyMembers[1].isOnField()) {
+              this.scene.pushPhase(new SummonPhase(this.scene, 1));
+            }
+          }
+
+          super.end();
+        });
+        return;
+      } else if (pokemon instanceof EnemyPokemon && pokemon.isBoss() && pokemon.formIndex && pokemon.formIndex === 2 && pokemon.bossSegmentIndex < 1 && pokemon.species.speciesId === Species.DINGUS) { //for DINGUS
+        console.log(pokemon.formIndex);
         this.scene.fadeOutBgm(Utils.fixedInt(2000), false);
         pokemon.generateAndPopulateMoveset(2);
         pokemon.hp = pokemon.hp + 100;
@@ -3668,6 +3712,8 @@ export class FaintPhase extends PokemonPhase {
         if (enemy.formIndex && (enemy.species.speciesId === Species.ETERNATUS )) {
           this.scene.ui.showDialogue(battleSpecDialogue[BattleSpec.FINAL_BOSS][this.scene.arena.biomeType].secondStageWin, enemy.species.name, null, () => this.doFaint());
         } else if (enemy.formIndex && enemy.hp <= 0 && ((enemy.formIndex === 1 && Species.MEWTWO) )) {
+          this.scene.ui.showDialogue(battleSpecDialogue[BattleSpec.FINAL_BOSS][this.scene.arena.biomeType].thirdStageWin, enemy.species.name, null, () => this.doFaint());
+        } else if (enemy.formIndex && enemy.hp <= 0 && ((enemy.formIndex === 1 && Species.DINGUS) )) {
           this.scene.ui.showDialogue(battleSpecDialogue[BattleSpec.FINAL_BOSS][this.scene.arena.biomeType].thirdStageWin, enemy.species.name, null, () => this.doFaint());
         } else {
           enemy.hp++;

@@ -204,6 +204,10 @@ export default class BattleScene extends SceneBase {
   }
 
   loadPokemonAtlas(key: string, atlasPath: string, experimental?: boolean) {
+    console.log("atlast details");
+    console.log(key);
+    console.log(atlasPath);
+    console.log(experimental);
     if (experimental === undefined) {
       experimental = this.experimentalSprites;
     }

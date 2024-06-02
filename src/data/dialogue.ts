@@ -2495,6 +2495,15 @@ export const battleSpecDialogue = {
       thirdStageWin: `So be it...
                       $..To the powerful...\ngoes everything`
     },
+    [Biome.TERRIBLE]: {
+      encounter: `.....
+                  $?`,
+      firstStageWin: `......
+                    $!
+                    $......`,
+      secondStageWin: ".....!!!!!",
+      thirdStageWin: "..."
+    },
   }
 };
 

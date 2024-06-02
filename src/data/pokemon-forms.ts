@@ -746,6 +746,12 @@ export const pokemonFormChanges: PokemonFormChanges = {
   [Species.GALAR_DARMANITAN]: [
     new SpeciesFormChange(Species.GALAR_DARMANITAN, "", "zen", new SpeciesFormChangeManualTrigger(), true),
     new SpeciesFormChange(Species.GALAR_DARMANITAN, "zen", "", new SpeciesFormChangeManualTrigger(), true)
+  ],
+  [Species.DINGUS]: [
+    new SpeciesFormChange(Species.DINGUS, "", SpeciesFormKey.MEGA_Y, new SpeciesFormChangeManualTriggerY()),
+    new SpeciesFormChange(Species.DINGUS, "", SpeciesFormKey.MEGA_X, new SpeciesFormChangeManualTriggerX()),
+    new SpeciesFormChange(Species.DINGUS, "", SpeciesFormKey.MEGA_X, new SpeciesFormChangeItemTrigger(FormChangeItem.MEWTWONITE_X)),
+    new SpeciesFormChange(Species.DINGUS, "", SpeciesFormKey.MEGA_Y, new SpeciesFormChangeItemTrigger(FormChangeItem.MEWTWONITE_Y))
   ]
 };
 

@@ -332,6 +332,8 @@ export abstract class PokemonSpeciesForm {
         break;
       case Species.BLOODMOON_URSALUNA:
         break;
+      case Species.DINGUS:
+        break;
       default:
         speciesId = speciesId % 2000;
         break;
@@ -2608,6 +2610,11 @@ export function initSpecies() {
     ),
     new PokemonSpecies(Species.PALDEA_WOOPER, 9, false, false, false, "Water Fish Pokémon", Type.POISON, Type.GROUND, 0.4, 11, Abilities.POISON_POINT, Abilities.WATER_ABSORB, Abilities.UNAWARE, 210, 55, 45, 45, 25, 25, 15, 255, 50, 42, GrowthRate.MEDIUM_FAST, 50, false),
     new PokemonSpecies(Species.BLOODMOON_URSALUNA, 9, false, false, false, "Peat Pokémon", Type.GROUND, Type.NORMAL, 2.7, 333, Abilities.MINDS_EYE, Abilities.NONE, Abilities.NONE, 555, 113, 70, 120, 135, 65, 52, 75, 50, 275, GrowthRate.MEDIUM_FAST, 50, false),
+    new PokemonSpecies(Species.DINGUS, 9, false, true, false, "Stoopid Pokéman", Type.PSYCHIC, null, 2, 122, Abilities.PRESSURE, Abilities.NONE, Abilities.UNNERVE, 640, 180, 100, 90, 100, 90, 80, 3, 0, 340, GrowthRate.SLOW, null, false, true,
+      new PokemonForm("Normal", "", Type.PSYCHIC, null, 2, 122, Abilities.SIMPLE, Abilities.NONE, Abilities.UNNERVE, 640, 180, 100, 90, 100, 90, 80, 3, 0, 340),
+      new PokemonForm("Mega X", SpeciesFormKey.MEGA_X, Type.ROCK, Type.FLYING, 2.3, 127, Abilities.SIMPLE, Abilities.NONE, Abilities.STEADFAST, 710, 200, 100, 150, 100, 80, 80, 3, 0, 340),
+      new PokemonForm("Mega Y", SpeciesFormKey.MEGA_Y, Type.STEEL, null, 1.5, 33, Abilities.SIMPLE, Abilities.NONE, Abilities.INSOMNIA, 780, 200, 100, 150, 100, 150, 80, 3, 0, 340),
+    ),
   );
 }
 
@@ -3207,6 +3214,7 @@ export const speciesStarters = {
   [Species.PALDEA_TAUROS]: 5,
   [Species.PALDEA_WOOPER]: 3,
   [Species.BLOODMOON_URSALUNA]: 7,
+  [Species.DINGUS]: 10,
 };
 
 export const noStarterFormKeys: string[] = [
@@ -3314,6 +3322,7 @@ export const starterPassiveAbilities = {
   [Species.MOLTRES]: Abilities.DROUGHT,
   [Species.DRATINI]: Abilities.AERILATE,
   [Species.MEWTWO]: Abilities.NEUROFORCE,
+  [Species.DINGUS]: Abilities.SUPREME_OVERLORD,
   [Species.MEW]: Abilities.PROTEAN,
   [Species.CHIKORITA]: Abilities.THICK_FAT,
   [Species.CYNDAQUIL]: Abilities.DROUGHT,

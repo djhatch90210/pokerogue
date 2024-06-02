@@ -66,7 +66,7 @@ export class Arena {
   }
 
   isFinalBiome(): boolean {
-    return (this.biomeType === Biome.END || this.biomeType === Biome.FORBIDDEN_LAB);
+    return (this.biomeType === Biome.END || this.biomeType === Biome.FORBIDDEN_LAB || this.biomeType === Biome.TERRIBLE);
   }
 
   randomSpecies(waveIndex: integer, level: integer, attempt?: integer): PokemonSpecies {
@@ -258,6 +258,8 @@ export class Arena {
       return Type.DRAGON;
     case Biome.FORBIDDEN_LAB:
       return Type.PSYCHIC;
+    case Biome.TERRIBLE:
+      return Type.PSYCHIC;
     case Biome.ABYSS:
       return Type.DARK;
     default:
@@ -272,6 +274,8 @@ export class Arena {
     case Biome.END:
       return 0;
     case Biome.FORBIDDEN_LAB:
+      return 0;
+    case Biome.TERRIBLE:
       return 0;
     }
 
@@ -490,6 +494,8 @@ export class Arena {
     case Biome.FORBIDDEN_LAB:
       return this.getDayTint();
     case Biome.END:
+      return this.getDayTint();
+    case Biome.TERRIBLE:
       return this.getDayTint();
     }
 
